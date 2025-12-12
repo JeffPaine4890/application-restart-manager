@@ -14,7 +14,7 @@ The program consists of two parts: the main program that keeps track of which ap
 `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine`<br>
 `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`<br>
 This will allow you to run PowerShell scripts that you have created locally on your computer, as well as trusted PowerShell scripts you have downloaded from the internet.
-6. Now we need to trust the PowerShell script included as part of Application Restart Manager. In a PowerShell terminal, navigate to the directory you extracted Application Restart Manager to, for instance: `cd c:\full\path\here\`, then run the following command:<br>
+6. Now we need to trust the PowerShell script included as part of Application Restart Manager. In a PowerShell terminal, navigate to the directory you extracted Application Restart Manager to, for instance: `cd "c:\full\path\here\"`, then run the following command:<br>
 `Unblock-File ApplicationRestartManager.ps1`</br>
 Now your computer will be able to run the PowerShell script at logoff.
 7. Finally, we need to ensure the main Application Restart Manager program will start with Windows. There are several ways to do this, but the easiest is to open the directory you extracted Application Restart Manager to in Explorer, right-click on ApplicationRestartManager.exe, click Show more options if needed, then click Create shortcut. Cut the shortcut, and use Explorer's navigation bar to navigate to `shell:startup`, and paste the shortcut into that folder. If you want, you can also double-click the shortcut to start the main program right now (it will run in the background; you will not see any window).
