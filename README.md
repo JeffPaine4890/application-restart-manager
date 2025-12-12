@@ -1,2 +1,23 @@
-# application-restart-manager
-Gives users more control over Windows' "Automatically save my restartable apps and restart them when I sign back in" feature
+# Application Restart Manager
+This program gives users more control over Windows' "Automatically save my restartable apps and restart them when I sign back in" feature. By default, the program will prevent any application that doesn't actually have a window open from restarting upon logging back in (this will fix issues such as, for example, Spotify automatically starting up even if it was only minimized to the system tray, and even if you turned off Spotify's options to automatically start with Windows). Users can also make a list of applications they don't want to ever restart upon logging back on, as well as a list of applications they want to restart upon logging in even if the application didn't have an open window (this can fix unintended side effects of this program, for instance, if you have Phone Link set to start with Windows then it will open a window when it starts unless you add it to the allow list).
+
+The program consists of two parts: the main program that keeps track of which apps have open windows and, once the user starts logging off, will write a list of all processes *without* open windows to a file; and a PowerShell script that will be run at logoff that will read that list and remove registry entries Windows creates to restart those applications.
+
+## Setup
+1. First, extract all the files into the directory of your choosing. Make sure you have write permissions in this directory (for instance, if you try to put it in a directory in Program Files, you won't have write permissions by default)
+2. If you're running a Home Edition of Windows, you'll need to install the Group Policy Editor by opening a Command Prompt terminal as an administrator and entering the following commands:<br>
+`FOR %F IN ("%SystemRoot%\servicing\Packages\Microsoft-Windows-GroupPolicy-ClientTools-Package~*.mum") DO DISM /Online /NoRestart /Add-Package:"%F"`<br>
+`FOR %F IN ("%SystemRoot%\servicing\Packages\Microsoft-Windows-GroupPolicy-ClientExtensions-Package~*.mum") DO DISM /Online /NoRestart /Add-Package:"%F"`
+3. Once you have Group Policy Editor installed, open the Local Group Policy Editor by running gpedit.msc from the Run dialog
+4. Navigate to User Configuration > Scripts (Logon/Logoff), double-click Logoff, then navigate to the PowerShell Scripts tab. Click Add, then Browse, then navigate to the folder you extracted Application Restart Manager to and open ApplicationRestartManager.ps1. Click OK, then OK, then close the Local Group Policy Editor.
+5. Now we need to give PowerShell permission to execute that script. Open a PowerShell terminal as an administrator and enter the following commands:<br>
+`Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine`<br>
+`Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`<br>
+This will allow you to run PowerShell scripts that you have created locally on your computer, as well as trusted PowerShell scripts you have downloaded from the internet.
+6. Now we need to trust the PowerShell script included as part of Application Restart Manager. In a PowerShell terminal, navigate to the directory you extracted Application Restart Manager to, for instance: `cd c:\full\path\here\`, then run the following command:<br>
+`Unblock-File ApplicationRestartManager.ps1`</br>
+Now your computer will be able to run the PowerShell script at logoff.
+7. Finally, we need to ensure the main Application Restart Manager program will start with Windows. There are several ways to do this, but the easiest is to open the directory you extracted Application Restart Manager to in Explorer, right-click on ApplicationRestartManager.exe, click Show more options if needed, then click Create shortcut. Cut the shortcut, and use Explorer's navigation bar to navigate to `shell:startup`, and paste the shortcut into that folder. If you want, you can also double-click the shortcut to start the main program right now (it will run in the background; you will not see any window).
+
+## Optional features
+There are two optional files you can create in the same directory as Application Restart Manager, `alwaysremove.txt` and `alwayskeep.txt`. alwaysremove.txt is a list of applications that you *never* want Windows to restart after you log on; and alwayskeep.txt is a list of applications that you always want Windows to restart after you log on, as long as they were running in any capacity when you logged off (such as minimized to the system tray). These files simply consist of one process name per line. The process name can be found in Task Manager, right-clicking the column headers and checking Process name, then finding the process whose process name you want (don't copy the `.exe` or any other file extension)
