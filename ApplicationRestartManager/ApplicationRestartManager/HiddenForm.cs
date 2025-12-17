@@ -1,5 +1,6 @@
 
 using System.Diagnostics;
+using System.Globalization;
 
 namespace ApplicationRestartManager
 {
@@ -61,7 +62,7 @@ namespace ApplicationRestartManager
 
         private void ManageCpuUsage()
         {
-            while ((thisProcess.TotalProcessorTime.TotalMilliseconds - processCpuStartTime) / ((runningTime.ElapsedMilliseconds - systemCpuStartTime) * totalProcessors) * 100.0 > maxCpuUsage)
+            while ((thisProcess.TotalProcessorTime.TotalMilliseconds - processCpuStartTime) / ((runningTime.ElapsedMilliseconds - systemCpuStartTime) * totalProcessors) * 100.0 >= maxCpuUsage)
             {
                 Thread.Sleep(1);
             }
