@@ -51,14 +51,6 @@ namespace ApplicationRestartManager
                         uniqueProcessNames.Add(process.ProcessName);
                     }
                 }
-                using FileStream processesWithMainWindowHandlesFile = new(Path.GetDirectoryName(Application.ExecutablePath) + "\\working.txt", FileMode.Create, FileAccess.Write, FileShare.None);
-                using StreamWriter processesWithMainWindowHandlesWriter = new(processesWithMainWindowHandlesFile);
-                foreach (string processName in processesWithMainWindowHandles)
-                {
-                    processesWithMainWindowHandlesWriter.WriteLine(processName);
-                }
-                processesWithMainWindowHandlesWriter.Close();
-                processesWithMainWindowHandlesFile.Close();
                 using FileStream removalListFile = new(Path.GetDirectoryName(Application.ExecutablePath) + "\\remove.txt", FileMode.Create, FileAccess.Write, FileShare.None);
                 using StreamWriter removalListWriter = new(removalListFile);
                 foreach (string processName in uniqueProcessNames)
@@ -79,3 +71,4 @@ namespace ApplicationRestartManager
         }
     }
 }
+
