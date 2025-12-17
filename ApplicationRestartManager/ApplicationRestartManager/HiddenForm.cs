@@ -5,8 +5,10 @@ namespace ApplicationRestartManager
 {
     internal sealed partial class HiddenForm : Form
     {
-        List<string> workingProcessList = [];
+        readonly List<string> workingProcessNameList = [];
         List<string> processesWithMainWindowHandles = [];
+        List<Process> workingProcessList = [];
+        List<Process> processList = [];
 
         public HiddenForm()
         {
@@ -20,15 +22,19 @@ namespace ApplicationRestartManager
         private void MainLoopTimer_Tick(object sender, EventArgs e)
         {
             processesWithMainWindowHandles.Clear();
-            processesWithMainWindowHandles = [.. workingProcessList];
+            processesWithMainWindowHandles = [.. workingProcessNameList];
+            workingProcessNameList.Clear();
+            processList.Clear();
+            processList = [.. workingProcessList];
             workingProcessList.Clear();
-            foreach (Process process in Process.GetProcesses())
+            workingProcessList = [.. Process.GetProcesses()];
+            foreach (Process process in workingProcessList)
             {
                 try
                 {
                     if (process.MainWindowHandle != IntPtr.Zero)
                     {
-                        workingProcessList.Add(process.ProcessName);
+                        workingProcessNameList.Add(process.ProcessName);
                     }
                 }
                 catch
@@ -43,7 +49,6 @@ namespace ApplicationRestartManager
             try
             {
                 List<string> uniqueProcessNames = [];
-                List<string> processesToKeep = [.. processesWithMainWindowHandles];
                 foreach (Process process in Process.GetProcesses())
                 {
                     if (!uniqueProcessNames.Contains(process.ProcessName))
@@ -55,15 +60,19 @@ namespace ApplicationRestartManager
                 using StreamWriter removalListWriter = new(removalListFile);
                 foreach (string processName in uniqueProcessNames)
                 {
-                    if (!processesToKeep.Contains(processName))
+                    if (!processesWithMainWindowHandles.Contains(processName))
                     {
                         removalListWriter.WriteLine(processName);
                     }
                 }
                 removalListWriter.Close();
                 removalListFile.Close();
-                processesToKeep.Clear();
+                processesWithMainWindowHandles.Clear();
                 uniqueProcessNames.Clear();
+                workingProcessList.Clear();
+                processList.Clear();
+                workingProcessNameList.Clear();
+                processesWithMainWindowHandles.Clear();
             }
             catch
             {
@@ -71,4 +80,5 @@ namespace ApplicationRestartManager
         }
     }
 }
+
 
