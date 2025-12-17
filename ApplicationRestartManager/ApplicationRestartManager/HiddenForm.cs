@@ -9,6 +9,13 @@ namespace ApplicationRestartManager
         List<string> processesWithMainWindowHandles = [];
         List<Process> workingProcessList = [];
         List<Process> processList = [];
+        
+        static readonly Process thisProcess = Process.GetCurrentProcess();
+        readonly int totalProcessors = Environment.ProcessorCount;
+        static readonly Stopwatch runningTime = Stopwatch.StartNew();
+        double processCpuStartTime = thisProcess.TotalProcessorTime.TotalMilliseconds;
+        double systemCpuStartTime = runningTime.ElapsedMilliseconds;
+        double maxCpuUsage = 0.5;
 
         public HiddenForm()
         {
@@ -18,6 +25,14 @@ namespace ApplicationRestartManager
         private void HiddenForm_Load(object sender, EventArgs e)
         {
             Hide();
+
+            try
+            {
+                maxCpuUsage = double.Parse(Environment.GetCommandLineArgs()[1], CultureInfo.CurrentCulture);
+            }
+            catch
+            {
+            }
         }
         private void MainLoopTimer_Tick(object sender, EventArgs e)
         {
@@ -40,8 +55,19 @@ namespace ApplicationRestartManager
                 catch
                 {
                 }
+                ManageCpuUsage();
+            }
+        }
+
+        private void ManageCpuUsage()
+        {
+            while ((thisProcess.TotalProcessorTime.TotalMilliseconds - processCpuStartTime) / ((runningTime.ElapsedMilliseconds - systemCpuStartTime) * totalProcessors) * 100.0 > maxCpuUsage)
+            {
                 Thread.Sleep(1);
             }
+            processCpuStartTime = thisProcess.TotalProcessorTime.TotalMilliseconds;
+            systemCpuStartTime = runningTime.ElapsedMilliseconds;
+            return;
         }
 
         private void HiddenForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -80,5 +106,6 @@ namespace ApplicationRestartManager
         }
     }
 }
+
 
 
