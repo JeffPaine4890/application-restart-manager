@@ -76,7 +76,7 @@ namespace ApplicationRestartManager
             try
             {
                 List<string> uniqueProcessNames = [];
-                foreach (Process process in Process.GetProcesses())
+                foreach (Process process in processList)
                 {
                     if (!uniqueProcessNames.Contains(process.ProcessName))
                     {
