@@ -9,7 +9,7 @@ The program consists of two parts: the main program that keeps track of which ap
 `FOR %F IN ("%SystemRoot%\servicing\Packages\Microsoft-Windows-GroupPolicy-ClientTools-Package~*.mum") DO DISM /Online /NoRestart /Add-Package:"%F"`<br>
 `FOR %F IN ("%SystemRoot%\servicing\Packages\Microsoft-Windows-GroupPolicy-ClientExtensions-Package~*.mum") DO DISM /Online /NoRestart /Add-Package:"%F"`
 3. Once you have Group Policy Editor installed, open the Local Group Policy Editor by running gpedit.msc from the Run dialog
-4. Navigate to User Configuration > Scripts (Logon/Logoff), double-click Logoff, then navigate to the PowerShell Scripts tab. Click Add, then Browse, then navigate to the folder you extracted Application Restart Manager to and open ApplicationRestartManager.ps1. Click OK, then OK, then close the Local Group Policy Editor.
+4. Navigate to User Configuration > Windows Settings > Scripts (Logon/Logoff), double-click Logoff, then navigate to the PowerShell Scripts tab. Click Add, then Browse, then navigate to the folder you extracted Application Restart Manager to and open ApplicationRestartManager.ps1. Click OK, then OK, then close the Local Group Policy Editor.
 5. Now we need to give PowerShell permission to execute that script. Open a PowerShell terminal as an administrator and enter the following commands:<br>
 `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine`<br>
 `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`<br>
